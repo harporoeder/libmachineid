@@ -6,7 +6,7 @@
 #define MIN(X, Y) (((X) < (Y)) ? (X) : (Y))
 #endif
 
-#ifdef __linux__
+#if defined(__linux__) || defined(__FreeBSD__)
 static size_t
 posix_read_file(const char *const path, char *const outputBuffer,
     const size_t outputBufferSize)
@@ -58,7 +58,9 @@ posix_read_file(const char *const path, char *const outputBuffer,
 
     return 0;
 }
+#endif
 
+#ifdef __linux__
 size_t
 machineid_raw(char *const outputBuffer, const size_t outputBufferSize)
 {
@@ -72,6 +74,15 @@ machineid_raw(char *const outputBuffer, const size_t outputBufferSize)
     }
 
     return posix_read_file("/var/lib/dbus/machine-id", outputBuffer,
+        outputBufferSize);
+}
+#endif
+
+#ifdef __FreeBSD__
+size_t
+machineid_raw(char *const outputBuffer, const size_t outputBufferSize)
+{
+    return posix_read_file("/etc/hostid", outputBuffer,
         outputBufferSize);
 }
 #endif
