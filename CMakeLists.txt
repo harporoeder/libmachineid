@@ -36,12 +36,18 @@ else ()
     target_sources (machineid PRIVATE sha256.c)
 endif()
 
+if (WIN32)
+    target_compile_options (machineid PRIVATE
+        -std=c89
+    )
+else ()
+    target_compile_options (machineid PRIVATE
+        -std=c89
+        -pedantic
+        -Wextra
+    )
+endif()
+
 add_executable (main main.c)
 
 target_link_libraries (main machineid)
-
-target_compile_options (machineid PRIVATE
-    -std=c89
-    -pedantic
-    -Wextra
-)
