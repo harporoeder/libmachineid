@@ -23,6 +23,4 @@ enum machineid_error {
 enum machineid_error machineid_generate(char *const outputBuffer,
     enum machineid_flags flags);
 
-void hexify();
-
 #endif
