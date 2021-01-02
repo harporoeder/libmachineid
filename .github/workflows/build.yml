@@ -24,3 +24,14 @@ jobs:
         run: cmake --build build --config Release
       - name: test
         run: cd build/Release && ./main.exe
+
+  build-test-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: setup
+        run: mkdir build && cd build && cmake ..
+      - name: build
+        run: cd build && make
+      - name: test
+        run: cd build && ./main

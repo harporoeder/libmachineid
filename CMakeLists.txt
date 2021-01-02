@@ -37,14 +37,17 @@ else ()
 endif()
 
 if (WIN32)
-    target_compile_options (machineid PRIVATE
-        -std=c89
-    )
 else ()
     target_compile_options (machineid PRIVATE
         -std=c89
         -pedantic
         -Wextra
+    )
+endif()
+
+if (APPLE)
+    target_link_libraries (machineid PRIVATE
+        "-framework CoreFoundation" "-framework IOKit"
     )
 endif()
 

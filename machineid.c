@@ -5,6 +5,11 @@
 #include <windows.h>
 #endif
 
+#ifdef __APPLE__
+#include <CoreFoundation/CoreFoundation.h>
+#include <IOKit/IOKitLib.h>
+#endif
+
 #ifdef MACHINEID_USE_SODIUM
 #include <sodium.h>
 #include <openssl/rand.h>
@@ -242,6 +247,45 @@ machineid_raw(char *const outputBuffer, const size_t outputBufferSize)
     }
 
     return (size_t)lpcbData;
+}
+#endif
+
+#ifdef __APPLE__
+size_t
+machineid_raw(char *const outputBuffer, const size_t outputBufferSize)
+{
+    io_registry_entry_t registryEntry;
+    CFStringRef identifier;
+    Boolean status;
+
+    registryEntry = IORegistryEntryFromPath(kIOMasterPortDefault,
+        "IOService:/");
+
+    if (registryEntry == MACH_PORT_NULL) {
+        return 0;
+    }
+
+    identifier = (CFStringRef)IORegistryEntryCreateCFProperty(registryEntry,
+        CFSTR(kIOPlatformUUIDKey), kCFAllocatorDefault, 0);
+
+    IOObjectRelease(registryEntry);
+
+    if (identifier == NULL) {
+        return 0;
+    }
+
+    status = CFStringGetCString(identifier, outputBuffer,
+        (CFIndex)outputBufferSize, kCFStringEncodingASCII);
+
+    if (status == false) {
+         CFRelease(identifier);
+
+         return 0;
+    }
+
+    CFRelease(identifier);
+
+    return strlen(outputBuffer) + 1;
 }
 #endif
 
