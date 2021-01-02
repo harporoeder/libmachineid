@@ -6,7 +6,7 @@ jobs:
   build-test-ubuntu:
     runs-on: ubuntu-latest
     steps:
-      - actions/checkout@v2
+      - uses: actions/checkout@v2
       - name: setup
         run: mkdir build && cd build && cmake ..
       - name: build
