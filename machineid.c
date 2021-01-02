@@ -1,8 +1,12 @@
 #include <stdio.h>
 #include <string.h>
 
+#ifdef MACHINEID_USE_SODIUM
 #include <sodium.h>
 #include <openssl/rand.h>
+#elif MACHINEID_USE_OPENSSL
+#include <openssl/sha.h>
+#endif
 
 #include "machineid.h"
 
@@ -18,29 +22,51 @@ static size_t machineid_raw(char *const outputBuffer,
 static char machineid_random_bytes(char *const outputBuffer,
     const size_t count);
 
+static char machineid_sha256(char *const outputBuffer,
+    const char *const inputBuffer, const size_t inputBufferSize);
+
 const char *const HEX_ALPHABET = "0123456789ABCDEF";
 
 #ifndef MIN
 #define MIN(X, Y) (((X) < (Y)) ? (X) : (Y))
 #endif
 
-#ifdef MACHINEID_USE_SODIUM
 static char
 machineid_random_bytes(char *const outputBuffer, const size_t count)
 {
+#ifdef MACHINEID_USE_SODIUM
     randombytes_buf((void *const)outputBuffer, count);
 
     return 0;
-}
-#endif
-
-#ifdef MACHINEID_USE_OPENSSL
-static char
-machineid_random_bytes(char *const outputBuffer, const size_t count)
-{
+#elif MACHINEID_USE_OPENSSL
     return RAND_bytes((unsigned char *const)outputBuffer, (int)count) != 0;
-}
+#else
+    size_t i;
+
+    for (i = 0; i < count; i++) {
+        outputBuffer[i] = rand();
+    }
+
+    return 0;
 #endif
+}
+
+static char
+machineid_sha256(char *const outputBuffer, const char *const inputBuffer,
+    const size_t inputBufferSize)
+{
+#ifdef MACHINEID_USE_SODIUM
+    return crypto_hash_sha256((unsigned char *const)outputBuffer,
+        (unsigned char *const)inputBuffer, inputBufferSize);
+#elif MACHINEID_USE_OPENSSL
+    SHA256((const unsigned char *const)inputBuffer, inputBufferSize,
+        (unsigned char *const)outputBuffer);
+
+    return 0;
+#else
+    return 0;
+#endif
+}
 
 enum machineid_error
 machineid_generate(char *const outputBuffer, enum machineid_flags flags)
@@ -66,8 +92,7 @@ machineid_generate(char *const outputBuffer, enum machineid_flags flags)
         }
     }
 
-    status = crypto_hash_sha256((unsigned char *const)hashBuffer,
-        (unsigned char *const)rawBuffer, rawSize);
+    status = machineid_sha256(hashBuffer, rawBuffer, rawSize);
 
     if (status != 0) {
         return MACHINEID_ERROR_HASH_FAILURE;
