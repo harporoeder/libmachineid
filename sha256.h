@@ -17,19 +17,19 @@
 #define SHA256_BLOCK_SIZE 32
 
 /**************************** DATA TYPES ****************************/
-typedef uint8_t BYTE;
-typedef uint32_t WORD;
+typedef uint8_t LIBSHA256_BYTE;
+typedef uint32_t LIBSHA256_WORD;
 
 typedef struct {
-	BYTE data[64];
-	WORD datalen;
+	LIBSHA256_BYTE data[64];
+	LIBSHA256_WORD datalen;
 	uint64_t bitlen;
-	WORD state[8];
+	LIBSHA256_WORD state[8];
 } SHA256_CTX;
 
 /*********************** FUNCTION DECLARATIONS **********************/
 void sha256_init(SHA256_CTX *ctx);
-void sha256_update(SHA256_CTX *ctx, const BYTE data[], size_t len);
-void sha256_final(SHA256_CTX *ctx, BYTE hash[]);
+void sha256_update(SHA256_CTX *ctx, const LIBSHA256_BYTE data[], size_t len);
+void sha256_final(SHA256_CTX *ctx, LIBSHA256_BYTE hash[]);
 
 #endif

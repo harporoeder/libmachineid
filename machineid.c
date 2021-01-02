@@ -73,8 +73,9 @@ machineid_sha256(char *const outputBuffer, const char *const inputBuffer,
     SHA256_CTX context;
 
     sha256_init(&context);
-    sha256_update(&context, (const BYTE *const)inputBuffer, inputBufferSize);
-    sha256_final(&context, (BYTE *const)outputBuffer);
+    sha256_update(&context, (const LIBSHA256_BYTE *const)inputBuffer,
+        inputBufferSize);
+    sha256_final(&context, (LIBSHA256_BYTE *const)outputBuffer);
 
     return 0;
 #endif
@@ -218,9 +219,7 @@ machineid_raw(char *const outputBuffer, const size_t outputBufferSize)
 {
     LSTATUS status;
     HKEY key;
-    DWORD regtype;
-    LPDWORD lpType;
-    LPDWORD lpcbData;
+    DWORD lpType, lpcbData;
 
     status = RegOpenKeyExA(HKEY_LOCAL_MACHINE,
         "SOFTWARE\\Microsoft\\Cryptography", 0,
@@ -230,7 +229,8 @@ machineid_raw(char *const outputBuffer, const size_t outputBufferSize)
         return 0;
     }
 
-    lpcbData = (LDPWORD)outputBufferSize;
+    ldtype = REG_SZ;
+    lpcbData = (DWORD)outputBufferSize;
 
     status = RegQueryValueExA(key, "MachineGuid", NULL, &lpType,
         (unsigned char *const)outputBuffer, &lpcbData);
