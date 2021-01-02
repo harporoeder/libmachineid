@@ -1,6 +1,10 @@
 #ifndef MACHINEID_H
 #define MACHINEID_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stddef.h>
 
 #define MACHINEID_HASH_SIZE 32
@@ -22,5 +26,9 @@ enum machineid_error {
 
 enum machineid_error machineid_generate(char *const outputBuffer,
     enum machineid_flags flags);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
