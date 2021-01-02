@@ -18,16 +18,16 @@ if (MACHINEID_USE_SODIUM AND MACHINEID_USE_OPENSSL)
     )
 endif()
 
-add_library (machineid machineid.c)
-
-target_link_libraries (machineid sodium crypto)
+add_library (machineid machineid.c sha256.c)
 
 if (MACHINEID_USE_SODIUM)
     target_compile_definitions(machineid PRIVATE MACHINEID_USE_SODIUM)
+    target_link_libraries (machineid sodium)
 endif()
 
 if (MACHINEID_USE_OPENSSL)
     target_compile_definitions(machineid PRIVATE MACHINEID_USE_OPENSSL)
+    target_link_libraries (machineid crypto)
 endif()
 
 add_executable (main main.c)

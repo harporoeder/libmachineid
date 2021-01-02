@@ -6,6 +6,8 @@
 #include <openssl/rand.h>
 #elif MACHINEID_USE_OPENSSL
 #include <openssl/sha.h>
+#else
+#include "sha256.h"
 #endif
 
 #include "machineid.h"
@@ -64,6 +66,12 @@ machineid_sha256(char *const outputBuffer, const char *const inputBuffer,
 
     return 0;
 #else
+    SHA256_CTX context;
+
+    sha256_init(&context);
+    sha256_update(&context, (const BYTE *const)inputBuffer, inputBufferSize);
+    sha256_final(&context, (BYTE *const)outputBuffer);
+
     return 0;
 #endif
 }
