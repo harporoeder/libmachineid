@@ -4,7 +4,7 @@ project (machineid)
 
 option(MACHINEID_USE_SODIUM
     "if libsodium should be used for hashing and random number generation"
-    ON
+    OFF
 )
 
 option(MACHINEID_USE_OPENSSL
@@ -18,7 +18,7 @@ if (MACHINEID_USE_SODIUM AND MACHINEID_USE_OPENSSL)
     )
 endif()
 
-add_library (machineid machineid.c sha256.c)
+add_library (machineid machineid.c)
 
 if (MACHINEID_USE_SODIUM)
     target_compile_definitions(machineid PRIVATE MACHINEID_USE_SODIUM)
@@ -28,6 +28,11 @@ endif()
 if (MACHINEID_USE_OPENSSL)
     target_compile_definitions(machineid PRIVATE MACHINEID_USE_OPENSSL)
     target_link_libraries (machineid crypto)
+elseif (MACHINEID_USE_OPENSSL)
+    target_compile_definitions(machineid PRIVATE MACHINEID_USE_OPENSSL)
+    target_link_libraries (machineid crypto)
+else ()
+    target_sources (machineid PRIVATE sha256.c)
 endif()
 
 add_executable (main main.c)
