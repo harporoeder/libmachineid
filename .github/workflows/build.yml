@@ -1,0 +1,15 @@
+name: C CI
+
+on: push
+
+jobs:
+  build-test-ubuntu:
+    runs-on: ubuntu-latest
+    steps:
+      - actions/checkout@v2
+      - name: setup
+        run: mkdir build && cd build && cmake ..
+      - name: build
+        run: make
+      - name: test
+        run: cd build && ./main
