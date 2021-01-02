@@ -219,7 +219,7 @@ machineid_raw(char *const outputBuffer, const size_t outputBufferSize)
     LSTATUS status;
     HKEY key;
     DWORD regtype;
-    LPDWORD lpType
+    LPDWORD lpType;
     LPDWORD lpcbData;
 
     status = RegOpenKeyExA(HKEY_LOCAL_MACHINE,
