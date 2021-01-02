@@ -229,7 +229,7 @@ machineid_raw(char *const outputBuffer, const size_t outputBufferSize)
         return 0;
     }
 
-    lptype = REG_SZ;
+    lpType = REG_SZ;
     lpcbData = (DWORD)outputBufferSize;
 
     status = RegQueryValueExA(key, "MachineGuid", NULL, &lpType,
