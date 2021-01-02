@@ -132,15 +132,15 @@ void sha256_final(SHA256_CTX *ctx, LIBSHA256_BYTE hash[])
 	}
 
 	/* Append to the padding the total message's length in bits and transform. */
-	ctx->bitlen += ctx->datalen * 8;
-	ctx->data[63] = ctx->bitlen;
-	ctx->data[62] = ctx->bitlen >> 8;
-	ctx->data[61] = ctx->bitlen >> 16;
-	ctx->data[60] = ctx->bitlen >> 24;
-	ctx->data[59] = ctx->bitlen >> 32;
-	ctx->data[58] = ctx->bitlen >> 40;
-	ctx->data[57] = ctx->bitlen >> 48;
-	ctx->data[56] = ctx->bitlen >> 56;
+	ctx->bitlen += (LIBSHA256_BYTE)(ctx->datalen * 8);
+	ctx->data[63] = (LIBSHA256_BYTE)ctx->bitlen;
+	ctx->data[62] = (LIBSHA256_BYTE)(ctx->bitlen >> 8);
+	ctx->data[61] = (LIBSHA256_BYTE)(ctx->bitlen >> 16);
+	ctx->data[60] = (LIBSHA256_BYTE)(ctx->bitlen >> 24);
+	ctx->data[59] = (LIBSHA256_BYTE)(ctx->bitlen >> 32);
+	ctx->data[58] = (LIBSHA256_BYTE)(ctx->bitlen >> 40);
+	ctx->data[57] = (LIBSHA256_BYTE)(ctx->bitlen >> 48);
+	ctx->data[56] = (LIBSHA256_BYTE)(ctx->bitlen >> 56);
 	sha256_transform(ctx, ctx->data);
 
 	/* Since this implementation uses little endian byte ordering and SHA uses big endian, */

@@ -21,6 +21,6 @@ jobs:
       - name: setup
         run: mkdir build && cd build && cmake ..
       - name: build
-        run: cmake --build build --config Debug
+        run: cmake --build build --config Release
       - name: test
-        run: cd build/Debug && ./main.exe
+        run: cd build/Release && ./main.exe
