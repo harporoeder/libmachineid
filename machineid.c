@@ -1,6 +1,10 @@
 #include <stdio.h>
 #include <string.h>
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 #ifdef MACHINEID_USE_SODIUM
 #include <sodium.h>
 #include <openssl/rand.h>
@@ -205,6 +209,39 @@ machineid_raw(char *const outputBuffer, const size_t outputBufferSize)
 {
     return posix_read_file("/etc/hostid", outputBuffer,
         outputBufferSize);
+}
+#endif
+
+#ifdef _WIN32
+size_t
+machineid_raw(char *const outputBuffer, const size_t outputBufferSize)
+{
+    LSTATUS status;
+    HKEY key;
+    DWORD regtype;
+    LPDWORD lpType
+    LPDWORD lpcbData;
+
+    status = RegOpenKeyExA(HKEY_LOCAL_MACHINE,
+        "SOFTWARE\\Microsoft\\Cryptography", 0,
+        KEY_READ | KEY_WOW64_64KEY, &key);
+
+    if (status != ERROR_SUCCESS) {
+        return 0;
+    }
+
+    lpcbData = (LDPWORD)outputBufferSize;
+
+    status = RegQueryValueExA(key, "MachineGuid", NULL, &lpType,
+        (unsigned char *const)outputBuffer, &lpcbData);
+
+    if (status != ERROR_SUCCESS) {
+        RegCloseKey(key);
+
+        return 0;
+    }
+
+    return (size_t)lpcbData;
 }
 #endif
 

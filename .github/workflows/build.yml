@@ -13,3 +13,14 @@ jobs:
         run: cd build && make
       - name: test
         run: cd build && ./main
+
+  build-test-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: setup
+        run: mkdir build && cd build && cmake ..
+      - name: build
+        run: cmake --build build --config Debug
+      - name: test
+        run: cd build && ./main
