@@ -91,3 +91,18 @@ On Windows `rand_s` is used. For OpenBSD or FreeBSD `arc4random_buf` is used.
 On other platforms `rand` is used. When using `rand` you must ensure that you
 seed with `srand` else fallback identifiers will be the same across
 instances of your application.
+
+# Considerations when utilizing Docker
+
+It is common for Docker containers to have neither `/var/lib/dbus/machine-id`,
+or `/etc/machine-id`. In this instance a fallback is generated. These files
+can be made accessible to a container from the host system utilizing volumes:
+
+```bash
+docker run --rm -it \
+    -v /etc/machine-id:/etc/machine-id:ro \
+    ubuntu /bin/bash
+```
+
+This is not a universal property of Docker containers. Some may internally
+run DBus, or otherwise provide a `machine-id`.
