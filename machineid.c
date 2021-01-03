@@ -251,10 +251,10 @@ posix_read_file(const char *const path, unsigned char *const outputBuffer,
 }
 #endif
 
-#ifdef __linux__
 size_t
 machineid_raw(unsigned char *const outputBuffer, const size_t outputBufferSize)
 {
+#ifdef __linux__
     size_t resultSize;
 
     resultSize = posix_read_file("/etc/machine-id", outputBuffer,
@@ -266,54 +266,38 @@ machineid_raw(unsigned char *const outputBuffer, const size_t outputBufferSize)
 
     return posix_read_file("/var/lib/dbus/machine-id", outputBuffer,
         outputBufferSize);
-}
-#endif
-
-#ifdef __FreeBSD__
-size_t
-machineid_raw(unsigned char *const outputBuffer, const size_t outputBufferSize)
-{
+#elif __FreeBSD__
     return posix_read_file("/etc/hostid", outputBuffer,
         outputBufferSize);
-}
-#endif
+#elif __OpenBSD__
+    int mib[2], status;
+    size_t len;
 
-#ifdef _WIN32
-size_t
-machineid_raw(unsigned char *const outputBuffer, const size_t outputBufferSize)
-{
-    LSTATUS status;
-    HKEY key;
-    DWORD lpType, lpcbData;
+    mib[0] = CTL_HW;
+    mib[1] = HW_UUID;
 
-    status = RegOpenKeyExA(HKEY_LOCAL_MACHINE,
-        "SOFTWARE\\Microsoft\\Cryptography", 0,
-        KEY_READ | KEY_WOW64_64KEY, &key);
+    status = sysctl(mib, 2, NULL, &len, NULL, 0);
 
-    if (status != ERROR_SUCCESS) {
-        return 0;
+    if (status == -1) {
+        goto fallback;
     }
 
-    lpType = REG_SZ;
-    lpcbData = (DWORD)outputBufferSize;
-
-    status = RegQueryValueExA(key, "MachineGuid", NULL, &lpType, outputBuffer,
-        &lpcbData);
-
-    if (status != ERROR_SUCCESS) {
-        RegCloseKey(key);
-
-        return 0;
+    if (len >= outputBufferSize) {
+        goto fallback;
     }
 
-    return (size_t)lpcbData;
-}
-#endif
+    status = sysctl(mib, 2, outputBuffer, &len, NULL, 0);
 
-#ifdef __APPLE__
-size_t
-machineid_raw(unsigned char *const outputBuffer, const size_t outputBufferSize)
-{
+    if (status != -1) {
+        goto fallback;
+    }
+
+    return len;
+
+  fallback:
+    return posix_read_file("/etc/machine-id", outputBuffer,
+        outputBufferSize);
+#elif __APPLE__
     io_registry_entry_t registryEntry;
     CFStringRef identifier;
     Boolean status;
@@ -346,42 +330,36 @@ machineid_raw(unsigned char *const outputBuffer, const size_t outputBufferSize)
     CFRelease(identifier);
 
     return strlen((const char *const)outputBuffer) + 1;
-}
+#elif _WIN32
+    LSTATUS status;
+    HKEY key;
+    DWORD lpType, lpcbData;
+
+    status = RegOpenKeyExA(HKEY_LOCAL_MACHINE,
+        "SOFTWARE\\Microsoft\\Cryptography", 0,
+        KEY_READ | KEY_WOW64_64KEY, &key);
+
+    if (status != ERROR_SUCCESS) {
+        return 0;
+    }
+
+    lpType = REG_SZ;
+    lpcbData = (DWORD)outputBufferSize;
+
+    status = RegQueryValueExA(key, "MachineGuid", NULL, &lpType, outputBuffer,
+        &lpcbData);
+
+    if (status != ERROR_SUCCESS) {
+        RegCloseKey(key);
+
+        return 0;
+    }
+
+    return (size_t)lpcbData;
+#else
+    return 0;
 #endif
-
-#ifdef __OpenBSD__
-size_t
-machineid_raw(unsigned char *const outputBuffer, const size_t outputBufferSize)
-{
-    int mib[2], status;
-    size_t len;
-
-    mib[0] = CTL_HW;
-    mib[1] = HW_UUID;
-
-    status = sysctl(mib, 2, NULL, &len, NULL, 0);
-
-    if (status == -1) {
-        goto fallback;
-    }
-
-    if (len >= outputBufferSize) {
-        goto fallback;
-    }
-
-    status = sysctl(mib, 2, outputBuffer, &len, NULL, 0);
-
-    if (status != -1) {
-        goto fallback;
-    }
-
-    return len;
-
-  fallback:
-    return posix_read_file("/etc/machine-id", outputBuffer,
-        outputBufferSize);
 }
-#endif
 
 static void
 machineid_bin_to_hex(unsigned char *const outputBuffer,
