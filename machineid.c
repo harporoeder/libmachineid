@@ -33,11 +33,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdio.h>
 #include <string.h>
 #include <stddef.h>
-#include <stdlib.h>
 
 #ifdef _WIN32
 #include <windows.h>
+#define _CRT_RAND_S
 #endif
+
+#include <stdlib.h>
 
 #ifdef __APPLE__
 #include <CoreFoundation/CoreFoundation.h>
@@ -92,6 +94,23 @@ machineid_random_bytes(char *const outputBuffer, const size_t count)
     return RAND_bytes((unsigned char *const)outputBuffer, (int)count) != 0;
 #elif defined(__OpenBSD__) || defined(__FreeBSD__)
     arc4random_buf(void *const outputBuffer, count);
+#elif _WIN32
+    size_t i;
+    errno_t err;
+
+    for (i = 0; i < count; i++) {
+        unsigned int number;
+
+        err = rand_s(&number);
+
+        if (err != 0) {
+            retun 1;
+        }
+
+        outputBuffer[i] = number;
+    }
+
+    return 0;
 #else
     size_t i;
 
