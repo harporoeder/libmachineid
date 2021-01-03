@@ -60,6 +60,32 @@ end of the result. When using this flag the result buffer must be either
 `MACHINEID_HASH_SIZE + 1`, or `MACHINEID_UUID_SIZE + 1` as a minimum size
 depending on the other flags used.
 
+## Full example of library usage
+
+```c
+#include <stdio.h>
+
+#include "machineid.h"
+
+int main() {
+    enum machineid_error err;
+    unsigned char buffer[MACHINEID_UUID_SIZE + 1];
+
+    err = machineid_generate(buffer, MACHINEID_FLAG_AS_UUID
+        | MACHINEID_FLAG_NULL_TERMINATE);
+
+    printf("error: %s\n", machineid_error_to_string(err));
+
+    if (err != MACHINEID_ERROR_NONE && err != MACHINEID_ERROR_FALLBACK) {
+        return 1;
+    }
+    
+    printf("machine id: %s\n", buffer);
+
+    return 0;
+}
+```
+
 # Platform support
 
 The projected has been tested on Windows, MacOS, Linux, FreeBSD, and OpenBSD.
