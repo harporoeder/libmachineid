@@ -35,8 +35,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stddef.h>
 
 #ifdef _WIN32
-#include <windows.h>
 #define _CRT_RAND_S
+#include <windows.h>
 #endif
 
 #include <stdlib.h>
@@ -334,7 +334,7 @@ machineid_raw(unsigned char *const outputBuffer, const size_t outputBufferSize)
         return 0;
     }
 
-    status = CFStringGetCString(identifier, outputBuffer,
+    status = CFStringGetCString(identifier, (char *const)outputBuffer,
         (CFIndex)outputBufferSize, kCFStringEncodingASCII);
 
     if (status == false) {
@@ -345,7 +345,7 @@ machineid_raw(unsigned char *const outputBuffer, const size_t outputBufferSize)
 
     CFRelease(identifier);
 
-    return strlen(outputBuffer) + 1;
+    return strlen((const char *const)outputBuffer) + 1;
 }
 #endif
 
