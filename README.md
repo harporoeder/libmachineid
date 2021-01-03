@@ -55,3 +55,28 @@ avoided based on preference for an alternative build system.
 The only notable complication is that you are required to define
 `MACHINEID_USE_SODIUM`, or `MACHINEID_USE_OPENSSL` if you utilize either of
 of those libraries with `libmachineid`.
+
+# Sources of identifiers
+
+## Linux
+
+On Linux the file `/etc/machine-id` is used with `/var/lib/dbus/machine-id`
+as an alternative.
+
+## OpenBSD
+
+On OpenBSD `HW_UUID` is queried. The file `/etc/machine-id` is used as an
+alternative. DBUS is not installed by default and `/etc/machine-id` may not
+be present.
+
+## FreeBSD
+
+On FreeBSD the file `/etc/hostid` is used.
+
+## MacOS
+
+On MacOS the registry key `kIOPlatformUUIDKey` is queried.
+
+## Windows
+
+On Windows the registry key `MachineGuid` is queried.
