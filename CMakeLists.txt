@@ -36,8 +36,7 @@ else ()
     target_sources (machineid PRIVATE sha256.c)
 endif()
 
-if (WIN32)
-else ()
+if (NOT DEFINED WIN32)
     target_compile_options (machineid PRIVATE
         -std=c89
         -pedantic
