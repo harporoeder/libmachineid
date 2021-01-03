@@ -53,6 +53,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "sha256.h"
 #endif
 
+#ifdef __OpenBSD__
+#include <sys/param.h>
+#include <sys/sysctl.h>
+#endif
+
 #include "machineid.h"
 
 static void machineid_bin_to_hex(char *const outputBuffer,
@@ -173,7 +178,7 @@ machineid_generate(char *const outputBuffer, enum machineid_flags flags)
     }
 }
 
-#if defined(__linux__) || defined(__FreeBSD__)
+#if defined(__linux__) || defined(__FreeBSD__) || defined(__OpenBSD__)
 static size_t
 posix_read_file(const char *const path, char *const outputBuffer,
     const size_t outputBufferSize)
@@ -322,6 +327,40 @@ machineid_raw(char *const outputBuffer, const size_t outputBufferSize)
     CFRelease(identifier);
 
     return strlen(outputBuffer) + 1;
+}
+#endif
+
+#ifdef __OpenBSD__
+size_t
+machineid_raw(char *const outputBuffer, const size_t outputBufferSize)
+{
+    int mib[2], status;
+    size_t len;
+
+    mib[0] = CTL_HW;
+    mib[1] = HW_UUID;
+
+    status = sysctl(mib, 2, NULL, &len, NULL, 0);
+
+    if (status == -1) {
+        goto fallback;
+    }
+
+    if (len >= outputBufferSize) {
+        goto fallback;
+    }
+
+    status = sysctl(mib, 2, outputBuffer, &len, NULL, 0);
+
+    if (status != -1) {
+        goto fallback;
+    }
+
+    return len;
+
+  fallback:
+    return posix_read_file("/etc/machine-id", outputBuffer,
+        outputBufferSize);
 }
 #endif
 
