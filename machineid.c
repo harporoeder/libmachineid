@@ -94,6 +94,8 @@ machineid_random_bytes(unsigned char *const outputBuffer, const size_t count)
     return RAND_bytes(outputBuffer, (int)count) != 0;
 #elif defined(__OpenBSD__) || defined(__FreeBSD__)
     arc4random_buf((void *const)outputBuffer, count);
+
+    return 0;
 #elif _WIN32
     size_t i;
     errno_t err;
