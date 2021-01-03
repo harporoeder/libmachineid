@@ -33,6 +33,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdio.h>
 #include <string.h>
 #include <stddef.h>
+#include <stdlib.h>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -84,6 +85,8 @@ machineid_random_bytes(char *const outputBuffer, const size_t count)
     return 0;
 #elif MACHINEID_USE_OPENSSL
     return RAND_bytes((unsigned char *const)outputBuffer, (int)count) != 0;
+#elif defined(__OpenBSD__) || defined(__FreeBSD__)
+    arc4random_buf(void *const outputBuffer, count);
 #else
     size_t i;
 
