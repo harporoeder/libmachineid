@@ -390,11 +390,21 @@ machineid_bin_to_uuid(unsigned char *const outputBuffer,
     inputIter = inputBuffer;
 
     machineid_bin_to_hex(outputIter, inputIter, 4);
-    outputIter += 8; inputIter += 4; *outputIter = '-'; outputIter++;
+
+    outputIter += 8;
+    inputIter += 4;
+    *outputIter = '-';
+    outputIter++;
+
     for (i = 0; i < 4; i++) {
         machineid_bin_to_hex(outputIter, inputIter, 2);
-        outputIter += 4; inputIter += 2; *outputIter = '-'; outputIter++;
+
+        outputIter += 4;
+        inputIter += 2;
+        *outputIter = '-';
+        outputIter++;
     }
+
     machineid_bin_to_hex(outputIter, inputIter, 4);
 }
 
