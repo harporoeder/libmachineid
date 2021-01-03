@@ -104,7 +104,7 @@ machineid_random_bytes(char *const outputBuffer, const size_t count)
         err = rand_s(&number);
 
         if (err != 0) {
-            retun 1;
+            return 1;
         }
 
         outputBuffer[i] = number;
