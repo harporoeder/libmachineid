@@ -56,7 +56,7 @@ enum machineid_error {
 
 const char *machineid_error_to_string(enum machineid_error err);
 
-enum machineid_error machineid_generate(char *const outputBuffer,
+enum machineid_error machineid_generate(unsigned char *const outputBuffer,
     enum machineid_flags flags);
 
 #ifdef __cplusplus

@@ -62,20 +62,20 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "machineid.h"
 
-static void machineid_bin_to_hex(char *const outputBuffer,
-    const char *const inputBuffer, const size_t inputBufferSize);
+static void machineid_bin_to_hex(unsigned char *const outputBuffer,
+    const unsigned char *const inputBuffer, const size_t inputBufferSize);
 
-static void machineid_bin_to_uuid(char *const outputBuffer,
-    const char *const inputBuffer);
+static void machineid_bin_to_uuid(unsigned char *const outputBuffer,
+    const unsigned char *const inputBuffer);
 
-static size_t machineid_raw(char *const outputBuffer,
+static size_t machineid_raw(unsigned char *const outputBuffer,
     const size_t outputBufferSize);
 
-static char machineid_random_bytes(char *const outputBuffer,
+static char machineid_random_bytes(unsigned char *const outputBuffer,
     const size_t count);
 
-static char machineid_sha256(char *const outputBuffer,
-    const char *const inputBuffer, const size_t inputBufferSize);
+static char machineid_sha256(unsigned char *const outputBuffer,
+    const unsigned char *const inputBuffer, const size_t inputBufferSize);
 
 const char *const HEX_ALPHABET = "0123456789ABCDEF";
 
@@ -84,16 +84,16 @@ const char *const HEX_ALPHABET = "0123456789ABCDEF";
 #endif
 
 static char
-machineid_random_bytes(char *const outputBuffer, const size_t count)
+machineid_random_bytes(unsigned char *const outputBuffer, const size_t count)
 {
 #ifdef MACHINEID_USE_SODIUM
     randombytes_buf((void *const)outputBuffer, count);
 
     return 0;
 #elif MACHINEID_USE_OPENSSL
-    return RAND_bytes((unsigned char *const)outputBuffer, (int)count) != 0;
+    return RAND_bytes(outputBuffer, (int)count) != 0;
 #elif defined(__OpenBSD__) || defined(__FreeBSD__)
-    arc4random_buf(void *const outputBuffer, count);
+    arc4random_buf((void *const)outputBuffer, count);
 #elif _WIN32
     size_t i;
     errno_t err;
@@ -123,15 +123,14 @@ machineid_random_bytes(char *const outputBuffer, const size_t count)
 }
 
 static char
-machineid_sha256(char *const outputBuffer, const char *const inputBuffer,
+machineid_sha256(unsigned char *const outputBuffer,
+    unsigned const char *const inputBuffer,
     const size_t inputBufferSize)
 {
 #ifdef MACHINEID_USE_SODIUM
-    return crypto_hash_sha256((unsigned char *const)outputBuffer,
-        (unsigned char *const)inputBuffer, inputBufferSize);
+    return crypto_hash_sha256(outputBuffer, inputBuffer, inputBufferSize);
 #elif MACHINEID_USE_OPENSSL
-    SHA256((const unsigned char *const)inputBuffer, inputBufferSize,
-        (unsigned char *const)outputBuffer);
+    SHA256(inputBuffer, inputBufferSize, outputBuffer);
 
     return 0;
 #else
@@ -147,10 +146,11 @@ machineid_sha256(char *const outputBuffer, const char *const inputBuffer,
 }
 
 enum machineid_error
-machineid_generate(char *const outputBuffer, enum machineid_flags flags)
+machineid_generate(unsigned char *const outputBuffer,
+    enum machineid_flags flags)
 {
     char fallback;
-    char rawBuffer[256], hashBuffer[MACHINEID_HASH_SIZE];
+    unsigned char rawBuffer[256], hashBuffer[MACHINEID_HASH_SIZE];
     size_t rawSize;
     int status;
 
@@ -199,7 +199,7 @@ machineid_generate(char *const outputBuffer, enum machineid_flags flags)
 
 #if defined(__linux__) || defined(__FreeBSD__) || defined(__OpenBSD__)
 static size_t
-posix_read_file(const char *const path, char *const outputBuffer,
+posix_read_file(const char *const path, unsigned char *const outputBuffer,
     const size_t outputBufferSize)
 {
     FILE *handle;
@@ -233,7 +233,7 @@ posix_read_file(const char *const path, char *const outputBuffer,
 
     expectedResultSize = MIN((size_t)fileSize, outputBufferSize);
 
-    resultSize = fread(outputBuffer, sizeof(char),
+    resultSize = fread(outputBuffer, sizeof(unsigned char),
         expectedResultSize, handle);
     
     if (resultSize != expectedResultSize) {
@@ -253,7 +253,7 @@ posix_read_file(const char *const path, char *const outputBuffer,
 
 #ifdef __linux__
 size_t
-machineid_raw(char *const outputBuffer, const size_t outputBufferSize)
+machineid_raw(unsigned char *const outputBuffer, const size_t outputBufferSize)
 {
     size_t resultSize;
 
@@ -271,7 +271,7 @@ machineid_raw(char *const outputBuffer, const size_t outputBufferSize)
 
 #ifdef __FreeBSD__
 size_t
-machineid_raw(char *const outputBuffer, const size_t outputBufferSize)
+machineid_raw(unsigned char *const outputBuffer, const size_t outputBufferSize)
 {
     return posix_read_file("/etc/hostid", outputBuffer,
         outputBufferSize);
@@ -280,7 +280,7 @@ machineid_raw(char *const outputBuffer, const size_t outputBufferSize)
 
 #ifdef _WIN32
 size_t
-machineid_raw(char *const outputBuffer, const size_t outputBufferSize)
+machineid_raw(unsigned char *const outputBuffer, const size_t outputBufferSize)
 {
     LSTATUS status;
     HKEY key;
@@ -297,8 +297,8 @@ machineid_raw(char *const outputBuffer, const size_t outputBufferSize)
     lpType = REG_SZ;
     lpcbData = (DWORD)outputBufferSize;
 
-    status = RegQueryValueExA(key, "MachineGuid", NULL, &lpType,
-        (unsigned char *const)outputBuffer, &lpcbData);
+    status = RegQueryValueExA(key, "MachineGuid", NULL, &lpType, outputBuffer,
+        &lpcbData);
 
     if (status != ERROR_SUCCESS) {
         RegCloseKey(key);
@@ -312,7 +312,7 @@ machineid_raw(char *const outputBuffer, const size_t outputBufferSize)
 
 #ifdef __APPLE__
 size_t
-machineid_raw(char *const outputBuffer, const size_t outputBufferSize)
+machineid_raw(unsigned char *const outputBuffer, const size_t outputBufferSize)
 {
     io_registry_entry_t registryEntry;
     CFStringRef identifier;
@@ -351,7 +351,7 @@ machineid_raw(char *const outputBuffer, const size_t outputBufferSize)
 
 #ifdef __OpenBSD__
 size_t
-machineid_raw(char *const outputBuffer, const size_t outputBufferSize)
+machineid_raw(unsigned char *const outputBuffer, const size_t outputBufferSize)
 {
     int mib[2], status;
     size_t len;
@@ -384,12 +384,12 @@ machineid_raw(char *const outputBuffer, const size_t outputBufferSize)
 #endif
 
 static void
-machineid_bin_to_hex(char *const outputBuffer, const char *const inputBuffer,
-    const size_t inputBufferSize)
+machineid_bin_to_hex(unsigned char *const outputBuffer,
+    const unsigned char *const inputBuffer, const size_t inputBufferSize)
 {
     size_t i;
-    char *outputIter;
-    const char *inputIter;
+    unsigned char *outputIter;
+    const unsigned char *inputIter;
 
     outputIter = outputBuffer;
     inputIter = inputBuffer;
@@ -401,10 +401,11 @@ machineid_bin_to_hex(char *const outputBuffer, const char *const inputBuffer,
 }
 
 static void
-machineid_bin_to_uuid(char *const outputBuffer, const char *const inputBuffer)
+machineid_bin_to_uuid(unsigned char *const outputBuffer,
+    const unsigned char *const inputBuffer)
 {
-    char *outputIter;
-    const char *inputIter;
+    unsigned char *outputIter;
+    const unsigned char *inputIter;
     unsigned int i;
 
     outputIter = outputBuffer;
