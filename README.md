@@ -80,3 +80,14 @@ On MacOS the registry key `kIOPlatformUUIDKey` is queried.
 ## Windows
 
 On Windows the registry key `MachineGuid` is queried.
+
+# Sources of entropy
+
+When built with either `sodium` or `openssl` the random number generators
+provided by those libraries are always used, otherwise a platform specific
+generator is used.
+
+On Windows `rand_s` is used. For OpenBSD or FreeBSD `arc4random_buf` is used.
+On other platforms `rand` is used. When using `rand` you must ensure that you
+seed with `srand` else fallback identifiers will be the same across
+instances of your application.
