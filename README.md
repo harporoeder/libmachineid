@@ -2,6 +2,23 @@
 
 Cross-platform C89 library to get a platform identifier.
 
+# Quick start
+
+An example on Ubuntu:
+
+```bash
+sudo apt-get -y update
+sudo apt-get install -y build-essential cmake git
+git clone https://github.com/harporoeder/libmachineid.git
+cd libmachineid
+mkdir build
+cmake ..
+make
+./test
+> machine id: 4f6d8e5d-3837-473a-a707-8ec1f310e717
+> error: MACHINEID_ERROR_NONE
+```
+
 # Platform support
 
 The projected has been tested on Windows, MacOS, Linux, FreeBSD, and OpenBSD.
