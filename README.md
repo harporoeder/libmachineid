@@ -1,6 +1,9 @@
 # libmachineid
 
-Cross-platform C89 library to get a platform identifier.
+Cross-platform C89 library to get a platform identifier, `libmachineid` will
+attempt to gather a system identifier. If one cannot be determined a random
+identifier is generated. The system identifier is hashed, and then optionally
+truncated and converted to a UUIDv4 representation.
 
 # Quick start
 
@@ -18,6 +21,27 @@ make
 > machine id: 4f6d8e5d-3837-473a-a707-8ec1f310e717
 > error: MACHINEID_ERROR_NONE
 ```
+
+## Error conditions
+
+During utilization of `machineid_generate` an error may be returned of the
+type `enum machineid_error`. Error conditions should be checked to ensure
+that the result buffer will actually contain a valid result.
+
+* `MACHINEID_ERROR_NONE` An identifier was successfully found.
+* `MACHINEID_ERROR_RNG` An identifier was not found and the random number
+generator also failed. No result is provided in this case.
+* `MACHINEID_ERROR_NULL_OUTPUT_BUFFER` The library was utilized incorrectly,
+and nowhere to store the result was indicated. No result is provided in this
+case.
+* `MACHINEID_ERROR_FALLBACK` An identifier was not found, but a fallback
+was successfully generated
+* `MACHINEID_HASH_FAILURE` The library utilized for hashing returned an error.
+No result is provided in this case.
+
+Error cases can be converted to a constant string with
+`machineid_error_to_string`. This is likely useful for logging failures. The
+library will never log of it's own volition.
 
 # Platform support
 
