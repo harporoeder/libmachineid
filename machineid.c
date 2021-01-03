@@ -324,3 +324,31 @@ machineid_bin_to_uuid(char *const outputBuffer, const char *const inputBuffer)
     }
     machineid_bin_to_hex(outputIter, inputIter, 4);
 }
+
+const char *
+machineid_error_to_string(enum machineid_error err)
+{
+    switch (err) {
+        case MACHINEID_ERROR_NONE:
+            return "MACHINEID_ERROR_NONE";
+            break;
+
+        case MACHINEID_ERROR_RNG:
+            return "MACHINEID_ERROR_RNG";
+            break;
+
+        case MACHINEID_ERROR_NULL_OUTPUT_BUFFER:
+            return "MACHINEID_ERROR_NULL_OUTPUT_BUFFER";
+            break;
+
+        case MACHINEID_ERROR_FALLBACK:
+            return "MACHINEID_ERROR_FALLBACK";
+            break;
+
+        case MACHINEID_ERROR_HASH_FAILURE:
+            return "MACHINEID_ERROR_HASH_FAILURE";
+            break;
+    }
+
+    return NULL;
+}
