@@ -77,7 +77,7 @@ static char machineid_random_bytes(unsigned char *const outputBuffer,
 static char machineid_sha256(unsigned char *const outputBuffer,
     const unsigned char *const inputBuffer, const size_t inputBufferSize);
 
-const char *const HEX_ALPHABET = "0123456789ABCDEF";
+const char *const HEX_ALPHABET = "0123456789abcdef";
 
 #ifndef MIN
 #define MIN(X, Y) (((X) < (Y)) ? (X) : (Y))

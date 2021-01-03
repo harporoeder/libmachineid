@@ -99,8 +99,8 @@ test_uuid_not_terminated()
 int
 main()
 {
-    unsigned char buffer[MACHINEID_UUID_SIZE + 1];
     enum machineid_error err;
+    unsigned char buffer[MACHINEID_UUID_SIZE + 1];
 
     test_error_string_encoding();
     test_null_output_buffer();
@@ -111,8 +111,13 @@ main()
     err = machineid_generate(buffer, MACHINEID_FLAG_AS_UUID
         | MACHINEID_FLAG_NULL_TERMINATE);
 
-    printf("machine id: %s\n", buffer);
     printf("error: %s\n", machineid_error_to_string(err));
+
+    if (err != MACHINEID_ERROR_NONE && err != MACHINEID_ERROR_FALLBACK) {
+        return 1;
+    }
+
+    printf("machine id: %s\n", buffer);
 
     return 0;
 }
