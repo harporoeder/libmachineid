@@ -43,6 +43,23 @@ Error cases can be converted to a constant string with
 `machineid_error_to_string`. This is likely useful for logging failures. The
 library will never log of it's own volition.
 
+## Flags
+
+Bit flags of the type `enum machineid_flags` are provided to control the
+desired behavior of `machineid_generate`.
+
+* `MACHINEID_FLAG_DEFAULT` The default behavior of placing a raw digest in the
+result buffer. This flag is only required when no other flags are used. When
+using this mode the result buffer must be at least `MACHINEID_HASH_SIZE` in
+size.
+* `MACHINEID_FLAG_AS_UUID` Instead of returning a raw digest in the result 
+buffer, truncate the digest and encode it as a UUIDv4. In this mode the
+result buffer must be at least `MACHINEID_UUID_SIZE` in size.
+* `MACHINEID_FLAG_NULL_TERMINATE` The character `'\0'` will be inserted at the
+end of the result. When using this flag the result buffer must be either
+`MACHINEID_HASH_SIZE + 1`, or `MACHINEID_UUID_SIZE + 1` as a minimum size
+depending on the other flags used.
+
 # Platform support
 
 The projected has been tested on Windows, MacOS, Linux, FreeBSD, and OpenBSD.
