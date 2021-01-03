@@ -186,9 +186,9 @@ machineid_generate(unsigned char *const outputBuffer,
 
     if (flags & MACHINEID_FLAG_NULL_TERMINATE) {
         if (flags & MACHINEID_FLAG_AS_UUID) {
-            outputBuffer[MACHINEID_UUID_SIZE + 1] = '\0';
+            outputBuffer[MACHINEID_UUID_SIZE] = '\0';
         } else {
-            outputBuffer[MACHINEID_HASH_SIZE + 1] = '\0';
+            outputBuffer[MACHINEID_HASH_SIZE] = '\0';
         }
     }
 
@@ -398,7 +398,7 @@ machineid_bin_to_uuid(unsigned char *const outputBuffer,
     *outputIter = '-';
     outputIter++;
 
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < 3; i++) {
         machineid_bin_to_hex(outputIter, inputIter, 2);
 
         outputIter += 4;
@@ -407,7 +407,7 @@ machineid_bin_to_uuid(unsigned char *const outputBuffer,
         outputIter++;
     }
 
-    machineid_bin_to_hex(outputIter, inputIter, 4);
+    machineid_bin_to_hex(outputIter, inputIter, 6);
 }
 
 const char *

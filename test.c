@@ -64,11 +64,11 @@ test_null_terminate_hash()
 {
     unsigned char buffer[MACHINEID_HASH_SIZE + 1];
 
-    buffer[MACHINEID_HASH_SIZE + 1] = 52;
+    buffer[MACHINEID_HASH_SIZE] = 52;
 
     machineid_generate(buffer, MACHINEID_FLAG_NULL_TERMINATE);
 
-    assert(buffer[MACHINEID_HASH_SIZE + 1] == '\0');
+    assert(buffer[MACHINEID_HASH_SIZE] == '\0');
 }
 
 static void
@@ -76,12 +76,12 @@ test_null_terminate_uuid()
 {
     unsigned char buffer[MACHINEID_UUID_SIZE + 1];
 
-    buffer[MACHINEID_UUID_SIZE + 1] = 52;
+    buffer[MACHINEID_UUID_SIZE] = 52;
 
     machineid_generate(buffer, MACHINEID_FLAG_NULL_TERMINATE
         | MACHINEID_FLAG_AS_UUID);
 
-    assert(buffer[MACHINEID_UUID_SIZE + 1] == '\0');
+    assert(buffer[MACHINEID_UUID_SIZE] == '\0');
 }
 
 static void
@@ -93,7 +93,7 @@ test_uuid_not_terminated()
 
     machineid_generate(buffer, MACHINEID_FLAG_AS_UUID);
 
-    assert(buffer[MACHINEID_UUID_SIZE] != '\0');
+    assert(buffer[MACHINEID_UUID_SIZE - 1] != '\0');
 }
 
 int
