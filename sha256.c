@@ -10,6 +10,11 @@
               Algorithm specification can be found here:
                * http://csrc.nist.gov/publications/fips/fips180-2/fips180-2withchangenotice.pdf
               This implementation uses little endian byte order.
+
+This code is released into the public domain free of any restrictions.
+The author requests acknowledgement if the code is used, but does not require
+it. This code is provided free of any liability and without any quality claims
+by the author.
 *********************************************************************/
 
 /*************************** HEADER FILES ***************************/
