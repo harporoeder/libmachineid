@@ -86,6 +86,19 @@ int main() {
 }
 ```
 
+## Cryptography library integrations
+
+For convenience `libmachineid` provides a vendored implementation of `SHA256`,
+and platform specific random number generation capabilities. I recommend if
+possible utilizing an external cryptography library. Support is available for
+`sodium`, or `openssl`.
+
+* To build with `sodium` use `cmake -D MACHINEID_USE_SODIUM=ON ..`
+* To build with `openssl` use `cmake -D MACHINEID_USE_OPENSSL=ON ..`
+
+When compiled with either of those options the vendored `SHA256` will not be
+built, and random number generation will switch to using them.
+
 # Platform support
 
 The projected has been tested on Windows, MacOS, Linux, FreeBSD, and OpenBSD.
