@@ -59,10 +59,10 @@ enum machineid_error {
     MACHINEID_ERROR_HASH_FAILURE       = 4
 };
 
-const char *machineid_error_to_string(enum machineid_error err);
+const char *machineid_error_to_string(const enum machineid_error err);
 
 enum machineid_error machineid_generate(unsigned char *const outputBuffer,
-    enum machineid_flags flags);
+    const enum machineid_flags flags);
 
 #ifdef __cplusplus
 }

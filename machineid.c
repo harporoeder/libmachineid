@@ -149,7 +149,7 @@ machineid_sha256(unsigned char *const outputBuffer,
 
 enum machineid_error
 machineid_generate(unsigned char *const outputBuffer,
-    enum machineid_flags flags)
+    const enum machineid_flags flags)
 {
     char fallback;
     unsigned char rawBuffer[256], hashBuffer[MACHINEID_HASH_SIZE];
@@ -411,7 +411,7 @@ machineid_bin_to_uuid(unsigned char *const outputBuffer,
 }
 
 const char *
-machineid_error_to_string(enum machineid_error err)
+machineid_error_to_string(const enum machineid_error err)
 {
     switch (err) {
         case MACHINEID_ERROR_NONE:
