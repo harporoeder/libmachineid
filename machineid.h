@@ -37,8 +37,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 extern "C" {
 #endif
 
-#include <stddef.h>
-
 #define MACHINEID_HASH_SIZE 32
 #define MACHINEID_UUID_SIZE 36
 
