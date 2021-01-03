@@ -12,7 +12,7 @@ jobs:
       - name: build
         run: cd build && make
       - name: test
-        run: cd build && ./main
+        run: cd build && ./test
 
   build-test-windows:
     runs-on: windows-latest
@@ -23,7 +23,7 @@ jobs:
       - name: build
         run: cmake --build build --config Release
       - name: test
-        run: cd build/Release && ./main.exe
+        run: cd build/Release && ./test.exe
 
   build-test-macos:
     runs-on: macos-latest
@@ -34,4 +34,4 @@ jobs:
       - name: build
         run: cd build && make
       - name: test
-        run: cd build && ./main
+        run: cd build && ./test

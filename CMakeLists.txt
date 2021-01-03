@@ -51,6 +51,6 @@ if (APPLE)
     )
 endif()
 
-add_executable (main main.c)
+add_executable (test test.c)
 
-target_link_libraries (main machineid)
+target_link_libraries (test machineid)
